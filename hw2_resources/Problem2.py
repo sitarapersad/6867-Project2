@@ -28,13 +28,70 @@ package to solve it. See the file optimizers.txt for installation and usage for 
 
 
  
-#PART C: Test Your Dual Form of Linear SVMs
+#PART C: Kernelized Dual Form of Linear SVMs
 '''
-he dual form SVM is useful for several reasons, including an ability to handle kernel functions 
+The dual form SVM is useful for several reasons, including an ability to handle kernel functions 
 that are hard to express as feature functions in the primal form. Extend your dual form SVM code 
 to operate with kernels. Do the implementation as generally as possible, so that it either takes
  the kernel function or kernel matrix as input.
 '''
 
 
+def dual_SVM(X, Y, C, K):
+	'''
+	The cvxopt package solves the minimization problem:
+		min 1/2 x.T P x + q.T x
+		subject to:
+			Gx <= h
+			Ax =  b
 
+	The kernel SVM problem is thus reformulated to match this format:
+
+	x = alpha
+	P = outer(Y,Y) * K
+
+	q = col vector of [-1] * len(alpha)
+
+	A = Y, b = 0
+	Gx <= h such that 0<=a_i<=C
+
+	@params:
+		X - 
+		Y - 
+		C - 
+		K - 
+
+	@returns:
+		alpha - 	
+	'''
+
+	# If K is a function, use it to create the Gram matrix
+
+	n, d  = X.shape # n is the number of samples of X, d is the dimension . n is also the length of alpha
+
+	I_d = np.identity(d)
+	G = np.vstack((-1*I_d, I_d))
+
+	C_col = np.zeros(n,1)
+	C_col.fill(C)
+	h = np.vstack( (np.zeros((n,1)), C_col) )
+
+	q  = np.zeros(n,1)
+	q.fill(-1)
+
+ 	P = matrix(np.outer(Y,Y) * K)
+	q = matrix(q)
+	G = matrix(G)
+	h = matrix(h)
+	A = matrix(Y)
+	b = matrix(0)
+
+	# Use cvxopt to solve QP
+	solve = opt.solvers.qp(P,q,G,h,A,b)
+
+	print solve
+
+	# How to extract alphas from this ; and get non-zero alphas to select SVMS 
+
+
+	returns TODO
