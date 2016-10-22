@@ -25,8 +25,6 @@ package to solve it. See the file optimizers.txt for installation and usage for 
 '''
 
 
-
-
  
 #PART C: Kernelized Dual Form of Linear SVMs
 '''
@@ -34,19 +32,14 @@ The dual form SVM is useful for several reasons, including an ability to handle 
 that are hard to express as feature functions in the primal form. Extend your dual form SVM code 
 to operate with kernels. Do the implementation as generally as possible, so that it either takes
  the kernel function or kernel matrix as input.
-'''
 
+The cvxopt package solves the minimization problem:
+	min 1/2 x.T P x + q.T x
+	subject to:
+		Gx <= h
+		Ax =  b
 
-def dual_SVM(X, Y, C, K):
-	'''
-	The cvxopt package solves the minimization problem:
-		min 1/2 x.T P x + q.T x
-		subject to:
-			Gx <= h
-			Ax =  b
-
-	The kernel SVM problem is thus reformulated to match this format:
-
+The kernel SVM problem is thus reformulated to match this format:
 	x = alpha
 	P = outer(Y,Y) * K
 
@@ -54,13 +47,16 @@ def dual_SVM(X, Y, C, K):
 
 	A = Y, b = 0
 	Gx <= h such that 0<=a_i<=C
+'''
 
+
+def dual_SVM(X, Y, C, K):
+	'''
 	@params:
 		X - 
 		Y - 
 		C - 
 		K - 
-
 	@returns:
 		alpha - 	
 	'''
@@ -88,10 +84,16 @@ def dual_SVM(X, Y, C, K):
 
 	# Use cvxopt to solve QP
 	solve = opt.solvers.qp(P,q,G,h,A,b)
+	alpha = solve['x']
 
-	print solve
+	# Extract SVMs from alpha vector -  this is where alpha_i > 0 
 
-	# How to extract alphas from this ; and get non-zero alphas to select SVMS 
+	support = alpha > 1e-5
+
+	SVM = X[support]
+
+	return SVM 
+
 
 
 	returns TODO
