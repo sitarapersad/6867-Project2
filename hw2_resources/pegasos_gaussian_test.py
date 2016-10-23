@@ -76,7 +76,7 @@ def train_gaussianSVM(X, Y, K, L, max_epochs):
 
 
 # load data from csv files
-train = loadtxt('data/data3_train.csv')
+train = loadtxt('data/data1_train.csv')
 X = train[:,0:2]
 Y = train[:,2:3]
 
@@ -86,7 +86,8 @@ Y = np.asfarray([[1],[1],[-1],[-1]])
 # Carry out training.
 epochs = 1000;
 lmbda = .02;
-gamma = 2e-2;
+global gamma 
+gamma = 0.5;
 
 
 K = gaussian_gram(X, gamma)
@@ -95,11 +96,23 @@ global alpha, SVM_alpha, SVM_X, SVM_Y
 alpha, SVM_alpha, SVM_X, SVM_Y = train_gaussianSVM(X, Y, K, lmbda, epochs);
 
 
+def gaussian_kernel(SVM_X,x,gamma):
+	'''
+	Given an array of X values and a new x to predict, 
+	computes the  vector whose i^th entry is k(SVM_X[i],x)
+	'''
+
+	def gauss(y):
+		sqr_diff = np.linalg.norm(x-y)**2
+		sqr_diff *= -1./(2)
+		return np.exp(sqr_diff)
+
+	return np.apply_along_axis(gauss, 1, SVM_X ).reshape(-1,1)
+
 # Define the predict_gaussianSVM(x) function, which uses trained parameters, alpha
 def predict_gaussianSVM(x):
 	'''
-	The predicted value is given by h(x) = sign( sum_{support vectors} alpha_i y_i x_i.T * x  +b)
-	where b = y_k - w.T * x , where x i support vector and w = sum_{support vectors} alpha_i y_i x_i
+	The predicted value is given by h(x) = sign( sum_{support vectors} alpha_i y_i x_i.T * x )
 	'''
 	debug = False
 
@@ -109,21 +122,18 @@ def predict_gaussianSVM(x):
 	ay = SVM_alpha*SVM_Y
 	w = np.dot(ay.T, SVM_X)
 
-	# compute b HOW
-	b = SVM_Y[0] - np.dot(SVM_X[0],w.T)
-	print b
+	# # compute b??
+	# b = SVM_Y[0] - np.dot(SVM_X[0],w.T)
 
 	# predict new Y output
+	kernel = gaussian_kernel(SVM_X, x, gamma)
 
-	kernel_multiply = np.dot(SVM_X, x.T)
-	y = np.dot(ay.T, x_multiply) + SVM_X.shape[0]*b
+	y = np.dot(ay.T, kernel)
 
 	if debug:
 		print 'New y ', y
 
 	return y
-
-
 
 
 # plot training results
