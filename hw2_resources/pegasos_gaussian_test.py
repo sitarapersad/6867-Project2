@@ -96,6 +96,7 @@ global alpha, SVM_alpha, SVM_X, SVM_Y
 alpha, SVM_alpha, SVM_X, SVM_Y = train_gaussianSVM(X, Y, K, lmbda, epochs);
 
 
+print SVM_X
 def gaussian_kernel(SVM_X,x,gamma):
 	'''
 	Given an array of X values and a new x to predict, 
