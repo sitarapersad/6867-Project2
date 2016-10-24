@@ -50,6 +50,7 @@ def train_gaussianSVM(X, Y, K, L, max_epochs):
 
     epoch = 0
     while epoch < max_epochs:
+        print 'Epoch ...',epoch
         for i in range(n):
             t += 1
             eta = 1.0/(t*L)
@@ -60,22 +61,14 @@ def train_gaussianSVM(X, Y, K, L, max_epochs):
             else:
                 alpha[i] = (1-eta*L)*alpha[i]
         epoch += 1
-  
-
-
     #grab support vectors at alpha = 0
     alpha = np.absolute(alpha)
-    support = alpha != 0 # or alpha<-1e-3
-
+    support = alpha != 0# > 1e-5 # or alpha<-1e-3
     if debug:
         print 'Support', support.shape
-
     SVM_alpha = alpha[support].reshape(-1,1)
     SVM_X = X[support.flatten()].reshape(-1,d)
     SVM_Y = Y[support].reshape(-1,1)
-
-
-
     if debug:
         print 'alphas', SVM_alpha.shape
         print 'X', SVM_X.shape
@@ -86,7 +79,7 @@ def train_gaussianSVM(X, Y, K, L, max_epochs):
 
 # load data from csv files
 
-name = '1'
+name = '3'
 train = loadtxt('data/data'+name+'_train.csv')
 X = train[:,0:2]
 Y = train[:,2:3]
@@ -98,7 +91,7 @@ Y = train[:,2:3]
 epochs = 1000;
 lmbda = .02;
 global gamma 
-gamma = 1;
+gamma = 0.125;
 
 
 K = gaussian_gram(X, gamma)
@@ -116,10 +109,12 @@ def gaussian_kernel(SVM_X,x,gamma):
 
     def gauss(y):
         sqr_diff = np.linalg.norm(x-y)**2
-        sqr_diff *= -1./(2)
+        sqr_diff *= -1.0*gamma 
         return np.exp(sqr_diff)
 
     return np.apply_along_axis(gauss, 1, SVM_X ).reshape(-1,1)
+
+print 'Predicting values...'
 
 # Define the predict_gaussianSVM(x) function, which uses trained parameters, alpha
 def predict_gaussianSVM(x):
@@ -130,12 +125,7 @@ def predict_gaussianSVM(x):
 
     x = x.reshape(1, -1)
     if debug: print 'Classify x: ',x
-    # compute w
     ay = SVM_alpha*SVM_Y
-    # w = np.dot(ay.T, SVM_X)
-
-    # # compute b??
-    # b = SVM_Y[0] - np.dot(SVM_X[0],w.T)
 
     # predict new Y output
     kernel = gaussian_kernel(SVM_X, x, gamma)
@@ -147,14 +137,17 @@ def predict_gaussianSVM(x):
 
     return y
 
+print 'Saving results...'
 
-fname = 'Gaussian Kernel SVM on data' + str(name)+' with L = '+str(lmbda) +' gamma = '+str(gamma) +'.txt'
+fname = 'pegasos_gaussian_data'+name+'_L'+str(lmbda)+'_gamma'+str(gamma)+'.txt'
 f = open(fname, 'w')
 f.write('Number Support Vectors:\n')
 f.write(str(len(SVM_X)))
 f.close()
 
+print 'Plotting results...'
+
 # plot training results
-plotDecisionBoundary(X, Y, predict_gaussianSVM, [-1,0,1], title = 'Gaussian Kernel SVM on data' + str(name)+' with L = '+str(lmbda) +' \gamma = '+str(gamma))
-pl.savefig('pegasos_gaussian_data'+name+'_L'+str(lmbda)++'_gamma'+str(gamma)+'.png')
+plotDecisionBoundary(X, Y, predict_gaussianSVM, [-1,0,1], title = 'Gaussian Kernel SVM on data' + str(name)+' with L = '+str(lmbda) +' gamma = '+str(gamma))
+pl.savefig('pegasos_gaussian_data'+name+'_L'+str(lmbda)+'_gamma'+str(gamma)+'.png')
 pl.show()

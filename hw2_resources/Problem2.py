@@ -120,7 +120,6 @@ def dual_SVM(X, Y, C, K):
     SVM_X = X[support.flatten()].reshape(-1,d)
     SVM_Y = Y[support].reshape(-1,1)
 
-
     if debug:
         print 'alphas', SVM_alpha.shape
         print 'X', SVM_X.shape
