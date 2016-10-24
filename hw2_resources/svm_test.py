@@ -1,7 +1,7 @@
 from numpy import *
 from plotBoundary import *
 import pylab as pl
-# import your SVM training code
+import Problem2 as p2
 
 # parameters
 name = 'ls'
@@ -12,10 +12,17 @@ train = loadtxt('data/data'+name+'_train.csv')
 X = train[:, 0:2].copy()
 Y = train[:, 2:3].copy()
 
+# Define paramters
+C = 
+K = identity_gram(X)
+
 # Carry out training, primal and/or dual
-### TODO ###
+a, SVM_a, SVM_X, SVM_Y = dual_SVM(X, Y, C, K)
+
+
 # Define the predictSVM(x) function, which uses trained parameters
-### TODO ###
+def predictSVM(x):
+    
 
 # plot training results
 plotDecisionBoundary(X, Y, predictSVM, [-1, 0, 1], title = 'SVM Train')

@@ -148,7 +148,7 @@ def predict_gaussianSVM(x):
     return y
 
 
-fname = 'Gaussian Kernel SVM on data' + str(name)+' with L = '+str(lmbda) +' \gamma = '+str(gamma) +'.txt'
+fname = 'Gaussian Kernel SVM on data' + str(name)+' with L = '+str(lmbda) +' gamma = '+str(gamma) +'.txt'
 f = open(fname, 'w')
 f.write('Number Support Vectors:\n')
 f.write(str(len(SVM_X)))

@@ -29,13 +29,13 @@ def linear_gram(X, m=1):
     
 def compute_gram(X, k):
     ''' Given a function k and a datasdet X, computes the Gram matrix
-        slow as fudge'''
-        n, d = X.shape
-        K = np.zeros((n,n))
-        for i in range(n):
-            for j in range(j):
-                K[i,j] = k(X[i], X[j])
-        return K
+    slow as fudge'''
+    n, d = X.shape
+    K = np.zeros((n,n))
+    for i in range(n):
+        for j in range(j):
+            K[i,j] = k(X[i], X[j])
+    return K
 
 #PART B: Test Your Dual Form of Linear SVMs
 '''
@@ -55,64 +55,76 @@ to operate with kernels. Do the implementation as generally as possible, so that
  the kernel function or kernel matrix as input.
 
 The cvxopt package solves the minimization problem:
-	min 1/2 x.T P x + q.T x
-	subject to:
-		Gx <= h
-		Ax =  b
+    min 1/2 x.T P x + q.T x
+    subject to:
+        Gx <= h
+        Ax =  b
 
 The kernel SVM problem is thus reformulated to match this format:
-	x = alpha
-	P = outer(Y,Y) * K
+    x = alpha
+    P = outer(Y,Y) * K
 
-	q = col vector of [-1] * len(alpha)
+    q = col vector of [-1] * len(alpha)
 
-	A = Y, b = 0
-	Gx <= h such that 0<=a_i<=C
+    A = Y, b = 0
+    Gx <= h such that 0<=a_i<=C
 '''
 
 
 def dual_SVM(X, Y, C, K):
-	'''
-	@params:
-		X - n x d data matrix
-		Y - n x 1 classification vector
-		C - 
-		K - gram matrix or kernel function
-	@returns:
-		alpha - set of non-negative weights to be used in classification
-	'''
+    '''
+    @params:
+        X - n x d data matrix
+        Y - n x 1 classification vector
+        C - 
+        K - gram matrix or kernel function
+    @returns:
+        alpha - set of non-negative weights to be used in classification
+    '''
+    debug = False
 
-	# If K is a function, use it to create the Gram matrix
-   if callable(K):
-       K = compute_gram(X,K)
+    # If K is a function, use it to create the Gram matrix
+    if callable(K):
+        K = compute_gram(X,K)
 
-	n, d  = X.shape # n is the number of samples of X, d is the dimension . n is also the length of alpha
+    n, d  = X.shape # n is the number of samples of X, d is the dimension . n is also the length of alpha
 
-	I_d = np.identity(d)
-	G = np.vstack((-1*I_d, I_d))
+    I_d = np.identity(d)
+    G = np.vstack((-1*I_d, I_d))
 
-	C_col = np.zeros(n,1)
-	C_col.fill(C)
-	h = np.vstack( (np.zeros((n,1)), C_col) )
+    C_col = np.zeros(n,1)
+    C_col.fill(C)
+    h = np.vstack( (np.zeros((n,1)), C_col) )
 
-	q  = np.zeros(n,1)
-	q.fill(-1)
+    q  = np.zeros(n,1)
+    q.fill(-1)
 
- 	P = matrix(np.outer(Y,Y) * K)
-	q = matrix(q)
-	G = matrix(G)
-	h = matrix(h)
-	A = matrix(Y)
-	b = matrix(0)
+    P = opt.matrix(np.outer(Y,Y) * K)
+    q = opt.matrix(q)
+    G = opt.matrix(G)
+    h = opt.matrix(h)
+    A = opt.matrix(Y)
+    b = opt.matrix(0)
 
-	# Use cvxopt to solve QP
-	solve = opt.solvers.qp(P,q,G,h,A,b)
-	alpha = solve['x']
+    # Use cvxopt to solve QP
+    solve = opt.solvers.qp(P,q,G,h,A,b)
+    alpha = solve['x']
 
-	# Extract SVMs from alpha vector -  this is where alpha_i > 0 
+    # Extract SVMs from alpha vector -  this is where alpha_i > 0 
 
-	support = alpha > 1e-5
+    support = alpha > 1e-5
+    if debug:
+        print 'Support', support.shape
 
-	SVM = X[support]
+    SVM_alpha = alpha[support].reshape(-1,1)
+    SVM_X = X[support.flatten()].reshape(-1,d)
+    SVM_Y = Y[support].reshape(-1,1)
 
-	return SVM 
+
+    if debug:
+        print 'alphas', SVM_alpha.shape
+        print 'X', SVM_X.shape
+        print 'Y', SVM_Y.shape
+
+    return alpha, SVM_alpha, SVM_X, SVM_Y
+    
