@@ -18,9 +18,11 @@ def plotDecisionBoundary(X, Y, scoreFn, values, title = ""):
     zz = array([scoreFn(x) for x in c_[xx.ravel(), yy.ravel()]])
     zz = zz.reshape(xx.shape)
     pl.figure()
+    pl.subplot('111', axisbg='whitesmoke')
     CS = pl.contour(xx, yy, zz, values, colors = 'green', linestyles = 'solid', linewidths = 2)
     pl.clabel(CS, fontsize=9, inline=1)
     # Plot the training points
-    pl.scatter(X[:, 0], X[:, 1], c=(1.-Y), s=50, cmap = pl.cm.cool)
+    pl.scatter(X[:, 0], X[:, 1], c=(1.-Y), s=50, cmap = pl.cm.Spectral)
+    
     pl.title(title)
     pl.axis('tight')

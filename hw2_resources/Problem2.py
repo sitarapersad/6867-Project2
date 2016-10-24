@@ -13,8 +13,29 @@ package to solve it. See the file optimizers.txt for installation and usage for 
 
 # JUST IMPLEMENT KERNEL VERSION AND USE phi(x) = x for PART A 
 
+def identity_gram(X):
+    '''Given a dataset, computes the gram matrix using phi(x) = x '''
+    def k(x,y):
+        return np.dot(x,y)
+        
+    return compute_gram(X,k)
 
-
+def linear_gram(X, m=1):
+    '''Given a dataset, computes the gram matrix using k(x,y) = (1+xy)^m, m=1 '''
+    def k(x,y):
+        return (1+np.dot(x,y))**m
+        
+    return compute_gram(X,k)
+    
+def compute_gram(X, k):
+    ''' Given a function k and a datasdet X, computes the Gram matrix
+        slow as fudge'''
+        n, d = X.shape
+        K = np.zeros((n,n))
+        for i in range(n):
+            for j in range(j):
+                K[i,j] = k(X[i], X[j])
+        return K
 
 #PART B: Test Your Dual Form of Linear SVMs
 '''
@@ -53,15 +74,17 @@ The kernel SVM problem is thus reformulated to match this format:
 def dual_SVM(X, Y, C, K):
 	'''
 	@params:
-		X - 
-		Y - 
+		X - n x d data matrix
+		Y - n x 1 classification vector
 		C - 
-		K - 
+		K - gram matrix or kernel function
 	@returns:
-		alpha - 	
+		alpha - set of non-negative weights to be used in classification
 	'''
 
 	# If K is a function, use it to create the Gram matrix
+   if callable(K):
+       K = compute_gram(X,K)
 
 	n, d  = X.shape # n is the number of samples of X, d is the dimension . n is also the length of alpha
 
@@ -93,7 +116,3 @@ def dual_SVM(X, Y, C, K):
 	SVM = X[support]
 
 	return SVM 
-
-
-
-	returns TODO
