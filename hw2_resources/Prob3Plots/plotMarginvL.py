@@ -6,9 +6,9 @@ def problem3_plot(L, margin1,margin2,margin3,margin4):
     line1 = pl.plot(L,margin1, linestyle = '-',c='r',marker = 'o', label='dataset1')
     line2 = pl.plot(L,margin2, linestyle = '-',c='b',marker = 'o',label='dataset2')    
     line3 = pl.plot(L,margin3, linestyle = '-',c='g',marker = 'o',label='dataset3')
-    line4 = pl.plot(L,margin4, linestyle = '-',c='g',marker = 'o',label='dataset4') 
+    line4 = pl.plot(L,margin4, linestyle = '-',c='y',marker = 'o',label='dataset4') 
     pl.legend([line1, line2,line3,line4], ['Dataset 1', 'Dataset2', 'Dataset 3','Dataset 4'])
-    title = 'Effect of $\lambda$ on number of support vectors using Quadratic Program '
+    title = 'Effect of $\lambda$ on number of support vectors using Linear Pegasos '
     pl.title(title)
     pl.legend()
     pl.ylabel('Number of Support Vectors')
@@ -32,28 +32,30 @@ problem3_plot(L,margin1,margin2,margin3,margin4)
 
 
 ### QP NUM SVMS
-#gamma = [2**i for i in range(-2,3)]
-#QPsvm_1 = [76, 91, 124, 180, 225]
-#QPsvm_2 = [213, 210, 217, 241, 290]
-#QPsvm_3 = [113, 109, 122, 178, 250]
+gamma = [2**i for i in range(-2,3)]
+QPsvm_1 = [76, 91, 124, 180, 225]
+QPsvm_2 = [213, 210, 217, 241, 290]
+QPsvm_3 = [113, 109, 122, 178, 250]
+QPsvm_4 = [168, 194, 247, 343, 385]
 #
 #problem3_plot(gamma, QPsvm_1, QPsvm_2,QPsvm_3)
 ##
 
-### Pegasos NUM_SVMS
-#
-##gamma = 
-##svm_1 = 
-##svm_2 = 
-##svm_3 = 
-#
+# Pegasos NUM_SVMS
+
+gamma = [2**i for i in range(-2,3)]
+svm_1 = [8,40,38,55,73]
+svm_2 = [142,138,399,128,304]
+svm_3 = [200,30,29,38,57]
+svm_4 = [400,137,161,201,67]
+
 ## PROB2 EFFECT OF C on NUM SVM
-C = [0.01,0.1,1,10,100]
-C = [-2,-1,0,1,2]
-svm_1 = [399, 152, 49, 53, 52]
-svm_2 = [390, 237, 125, 85, 109]
-svm_3 = [385, 136, 58, 45, 54]
-svm_4 = [400, 273, 145, 106, 93]
+#C = [0.01,0.1,1,10,100]
+#C = [-2,-1,0,1,2]
+#svm_1 = [399, 152, 49, 53, 52]
+#svm_2 = [390, 237, 125, 85, 109]
+#svm_3 = [385, 136, 58, 45, 54]
+#svm_4 = [400, 273, 145, 106, 93]
 
 def problem3_plotsvm(L, margin1,margin2,margin3,margin4):
     pl.figure()
@@ -61,17 +63,17 @@ def problem3_plotsvm(L, margin1,margin2,margin3,margin4):
     line1 = pl.plot(L,margin1, linestyle = '-',c='r',marker = 'o', label='dataset1')
     line2 = pl.plot(L,margin2, linestyle = '-',c='b',marker = 'o',label='dataset2')    
     line3 = pl.plot(L,margin3, linestyle = '-',c='g',marker = 'o',label='dataset3')    
-    line4 = pl.plot(L,margin4, linestyle = '-',c='g',marker = 'o',label='dataset4')
+    line4 = pl.plot(L,margin4, linestyle = '-',c='y',marker = 'o',label='dataset4')
     pl.legend([line1, line2,line3,line4], ['Dataset 1', 'Dataset2', 'Dataset 3','Dataset 4'])
-    title = 'Effect of $C$ on number of support vectors using Quadratic Program '
+    title = 'Effect of $\gamma$ on number of support vectors using Pegasos'
     pl.title(title)
     pl.legend()
     pl.ylabel('Number of Support Vectors')
-    pl.xlabel('$\log_{10} C$')
+    pl.xlabel('$\gamma$')
     pl.axis('tight')
     
-    pl.savefig('C_NumSVM.png')
+    pl.savefig('Peg_Gam_NumSVM.png')
     
-problem3_plotsvm(C, svm_1,svm_2,svm_3,svm_4)
+problem3_plotsvm(gamma, svm_1, svm_2, svm_3, svm_4)
 #
 ##def heatmap

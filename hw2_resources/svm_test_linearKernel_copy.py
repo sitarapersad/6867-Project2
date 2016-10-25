@@ -5,23 +5,18 @@ import Problem2 as p2
 import cvxopt as opt
 import numpy as np
 
-
-
 # parameters
-name = '2'
-C = 0.1
-
-def wrapper_gaussian(name, C, gamma):
-    print '======Training======'
+def wrapper_linear(data, C):
+    # print '======Training======'
     # load data from csv files
-    train = loadtxt('data/data'+name+'_train.csv')
+    # train = loadtxt('data/data'+name+'_train.csv')
     # use deep copy here to make cvxopt happy
-    X = train[:, 0:2].copy()
-    Y = train[:, 2:3].copy()
+    X = data["Xtrain"]
+    Y = data["Ytrain"]
     
     # Define parameters
 
-    K = p2.gaussian_gram(X, gamma)
+    K = p2.linear_gram(X)
     
     def column_kernel(SVM_X,x):
         '''
@@ -31,10 +26,7 @@ def wrapper_gaussian(name, C, gamma):
         def k(y):
             #return np.dot(x,y) # returns the identity kernel
         
-            #return (1+np.dot(x,y)) # returns the linear basis kernel
-            sqr_diff = np.linalg.norm(x-y)**2
-            sqr_diff *= -1.0*gamma 
-            return np.exp(sqr_diff)
+            return (1+np.dot(x,y)) # returns the linear basis kernel
             
         return np.apply_along_axis(k, 1, SVM_X ).reshape(-1,1)
     
@@ -71,7 +63,7 @@ def wrapper_gaussian(name, C, gamma):
         kernel = column_kernel(SVM_X, x)
         y = np.dot(ay.T, kernel)
         if debug:
-            print 'New y ', y + bias
+            print 'New y ', y
         return y + bias
     
     def classification_error(X_train, Y_train):
@@ -82,46 +74,50 @@ def wrapper_gaussian(name, C, gamma):
             if predictSVM(X_train[i]) * Y_train[i] < 0:
                 incorrect += 1
         return incorrect/n
-#        
-#    train_err = classification_error(X, Y)
-#    # plot training results
-#    plotDecisionBoundary(X, Y, predictSVM, [-1, 0, 1], title = 'SVM Train on dataset '+str(name)+' with C = '+str(C))
-#    pl.savefig('prob3compategaussian_kernelSVMtrain_'+str(name)+'_with C='+str(C)+'_gamma='+str(gamma)+'.png')
-#    
-#    print '======Validation======'
-#    # load data from csv files
-#    validate = loadtxt('data/data'+name+'_validate.csv')
-#    X = validate[:, 0:2]
-#    Y = validate[:, 2:3]
-#    
-#    validation_err = classification_error(X, Y)
-#    
-#    # plot validation results
-#    plotDecisionBoundary(X, Y, predictSVM, [-1, 0, 1], title = 'SVM Validate on dataset '+str(name)+' with C = '+str(C)+' gamma = '+str(gamma))
-#    pl.savefig('prob2gaussian_kernelSVMvalidate_'+str(name)+'_with C='+str(C)+'_gamma='+str(gamma)+'.png')
-#    
-#    
-#    f = open('errors for gaussian kernel dataset '+str(name)+' with C = '+str(C)+' gamma = '+str(gamma)+'.txt', 'w')
-#    f.write('Train err: ')
-#    f.write(str(train_err))
-#    f.write('\n')
-#    f.write('Validate err: ')
-#    f.write(str(validation_err))
-#    f.write('\n')
-#    f.write('Number of SVMs: ')
-#    f.write(str(len(SVM_Y)))
-#    f.close()
-#    
-    print 'Done plotting...'
+        
+    train_err = classification_error(X, Y)
+    # plot training results
+    # plotDecisionBoundary(X, Y, predictSVM, [-1, 0, 1], title = 'MNIST SVM Train on dataset '+str(name)+' with C = '+str(C))
+    # pl.savefig('MNIST_prob2linear_kernelSVMtrain_'+str(name)+'_with C='+str(C)+'.png')
     
-    return len(SVM_Y)
+    # print '======Validation======'
+    # load data from csv files
+    # validate = loadtxt('data/data'+name+'_validate.csv')
+    X = data["Xvalidate"]
+    Y = data["Yvalidate"]
     
-gamma_vals = [2**i for i in range(-2,3)]
-for name in ['4']:
-    SVM = []
-    for C in [1./(0.02*400)]:
-        for gamma in gamma_vals:
-            num_svm = wrapper_gaussian(name, C, gamma)
-            SVM.append(num_svm)
-        print name, gamma, ' : ', SVM
+    validation_err = classification_error(X, Y)
+    
+    # plot validation results
+    # plotDecisionBoundary(X, Y, predictSVM, [-1, 0, 1], title = 'MNIST SVM Validate on dataset '+str(name)+' with C = '+str(C))
+    # pl.savefig('MNIST_prob2linear_kernelSVMvalidate_'+str(name)+'_with C='+str(C)+'.png')
+    
+    # print '======Testing======'
+    X = data["Xtest"]
+    Y = data["Ytest"]
+
+    testing_error = classification_error(X, Y)
+
+    # f = open('errors for linear kernel dataset '+str(name)+' with C = '+str(C)+'.txt', 'w')
+    # f.write('Train err: ')
+    # f.write(str(train_err))
+    # f.write('\n')
+    # f.write('Validate err: ')
+    # f.write(str(validation_err))
+    # f.write('Testing err: ')
+    # f.write(str(testing_error))
+    # f.write('\n')
+    # f.write('Number of SVMs: ')
+    # f.write(str(len(SVM_Y)))
+    # f.close()
+
+    return [C, validation_err, testing_error]
+    
+    # print 'Done plotting...'
+    
+
+# for C in [0.001, 0.01, 1, 10, 100]:
+#     for name in ['1','2','3']:
+#         wrapper_linear(name, C)
+    
     

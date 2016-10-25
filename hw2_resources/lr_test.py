@@ -58,14 +58,15 @@ def predictLR(x):
 def classificatonError(lr, X, Y):
   return lr.score(X, Y)
 
-# # plot training results
-# plotDecisionBoundary(X, Y, predictLR, [0.5], title = 'LR Train')
+ # plot training results
+plotDecisionBoundary(X, Y, predictLR, [0.5], title = 'LR Train')
+pl.show()
 
-# print '======Validation======'
-# # load data from csv files
-# validate = loadtxt('data/data'+name+'_validate.csv')
-# X = validate[:,0:2]
-# Y = validate[:,2:3]
+print '======Validation======'
+ # load data from csv files
+validate = loadtxt('data/data'+name+'_validate.csv')
+X = validate[:,0:2]
+Y = validate[:,2:3]
 
 # # plot validation results
 # plotDecisionBoundary(X, Y, predictLR, [0.5], title = 'LR Validate')
