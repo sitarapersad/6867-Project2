@@ -66,6 +66,3 @@ def linearSVMModelSelection(data):
   return results
 
 print linearSVMModelSelection(data_1vs7)
-
-
-
