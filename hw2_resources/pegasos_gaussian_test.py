@@ -26,7 +26,7 @@ def gaussian_gram(x, gamma):
     dists_sq += pt_sq_norms
     # turn into an RBF gram matrix
     km = dists_sq; del dists_sq
-    km *= -1. * gamma
+    km *= -1.*gamma
     K = np.exp(km)  # exponentiates in-place
     return K 
 
@@ -50,7 +50,8 @@ def train_gaussianSVM(X, Y, K, L, max_epochs):
 
     epoch = 0
     while epoch < max_epochs:
-        print 'Epoch ...',epoch
+        if epoch %100 == 0:
+            print 'Epoch ...',epoch
         for i in range(n):
             t += 1
             eta = 1.0/(t*L)
@@ -61,9 +62,10 @@ def train_gaussianSVM(X, Y, K, L, max_epochs):
             else:
                 alpha[i] = (1-eta*L)*alpha[i]
         epoch += 1
+        print 'epoch', epoch, alpha
     #grab support vectors at alpha = 0
     alpha = np.absolute(alpha)
-    support = alpha != 0# > 1e-5 # or alpha<-1e-3
+    support = alpha > 1e-15 # or alpha<-1e-3
     if debug:
         print 'Support', support.shape
     SVM_alpha = alpha[support].reshape(-1,1)
@@ -88,10 +90,10 @@ Y = train[:,2:3]
 #X = np.asfarray([[2,2],[2,3],[0,-1],[-3,-2]])
 #Y = np.asfarray([[1],[1],[-1],[-1]])
 # Carry out training.
-epochs = 1000;
+epochs = 3;
 lmbda = .02;
 global gamma 
-gamma = 0.125;
+gamma = 256;
 
 
 K = gaussian_gram(X, gamma)
@@ -99,7 +101,10 @@ K = gaussian_gram(X, gamma)
 global alpha, SVM_alpha, SVM_X, SVM_Y
 alpha, SVM_alpha, SVM_X, SVM_Y = train_gaussianSVM(X, Y, K, lmbda, epochs);
 
-
+print 'Number of support vectors', len(SVM_alpha), SVM_alpha
+#print SVM_alpha
+support = alpha>1e-15
+print np.sum(support)
 # print SVM_X
 def gaussian_kernel(SVM_X,x,gamma):
     '''
@@ -113,8 +118,6 @@ def gaussian_kernel(SVM_X,x,gamma):
         return np.exp(sqr_diff)
 
     return np.apply_along_axis(gauss, 1, SVM_X ).reshape(-1,1)
-
-print 'Predicting values...'
 
 # Define the predict_gaussianSVM(x) function, which uses trained parameters, alpha
 def predict_gaussianSVM(x):
@@ -133,7 +136,7 @@ def predict_gaussianSVM(x):
     y = np.dot(ay.T, kernel)
 
     if debug:
-        print 'New y ', y
+        print 'New y ', y[0][0]
 
     return y
 
@@ -145,7 +148,7 @@ f.write('Number Support Vectors:\n')
 f.write(str(len(SVM_X)))
 f.close()
 
-print 'Plotting results...'
+print 'Predicting results...'
 
 # plot training results
 plotDecisionBoundary(X, Y, predict_gaussianSVM, [-1,0,1], title = 'Gaussian Kernel SVM on data' + str(name)+' with L = '+str(lmbda) +' gamma = '+str(gamma))
