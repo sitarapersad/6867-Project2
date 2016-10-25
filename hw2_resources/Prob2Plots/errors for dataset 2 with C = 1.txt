@@ -1,0 +1,2 @@
+Train err: 0.1725
+Validate err: 0.16

@@ -26,14 +26,32 @@ def linear_gram(X, m=1):
         return (1+np.dot(x,y))**m
         
     return compute_gram(X,k)
-    
+
+def gaussian_gram(x, gamma):
+    '''Given a dataset and bandwidth sigma, computes the Gaussian RBF kernel matrix'''
+
+    # recast x matrix as floats
+    x = np.asfarray(x)
+
+    # get a matrix where the (i, j)th element is |x[i] - x[j]|^2
+    pt_sq_norms = (x ** 2).sum(axis=1)
+    dists_sq = np.dot(x, x.T)
+    dists_sq *= -2.0
+    dists_sq += pt_sq_norms.reshape(-1, 1)
+    dists_sq += pt_sq_norms
+    # turn into an RBF gram matrix
+    km = dists_sq; del dists_sq
+    km *= -1.*gamma
+    K = np.exp(km)  # exponentiates in-place
+    return K 
+
 def compute_gram(X, k):
     ''' Given a function k and a datasdet X, computes the Gram matrix
     slow as fudge'''
     n, d = X.shape
     K = np.zeros((n,n))
     for i in range(n):
-        for j in range(j):
+        for j in range(n):
             K[i,j] = k(X[i], X[j])
     return K
 
@@ -86,35 +104,48 @@ def dual_SVM(X, Y, C, K):
     # If K is a function, use it to create the Gram matrix
     if callable(K):
         K = compute_gram(X,K)
-
+    
+    if debug:
+        print K.shape, 'K'
+        print Y.shape, 'Y'
+        print X.shape, 'X'
     n, d  = X.shape # n is the number of samples of X, d is the dimension . n is also the length of alpha
 
-    I_d = np.identity(d)
+    I_d = np.identity(n)
     G = np.vstack((-1*I_d, I_d))
+    if debug:
+        print G.shape, 'G'
 
-    C_col = np.zeros(n,1)
+    C_col = np.zeros((n,1))
     C_col.fill(C)
     h = np.vstack( (np.zeros((n,1)), C_col) )
 
-    q  = np.zeros(n,1)
+    q  = np.zeros((n,1))
     q.fill(-1)
 
     P = opt.matrix(np.outer(Y,Y) * K)
+    if debug: print 'P', P.size
     q = opt.matrix(q)
+    if debug: print 'q', q.size    
     G = opt.matrix(G)
+    if debug: print 'G', G.size
     h = opt.matrix(h)
-    A = opt.matrix(Y)
-    b = opt.matrix(0)
-
+    if debug: print 'h', h.size
+    A = opt.matrix(Y.T)
+    if debug: print 'A', A.size
+    b = opt.matrix(0.0)
+    if debug: print 'b', b.size
     # Use cvxopt to solve QP
     solve = opt.solvers.qp(P,q,G,h,A,b)
     alpha = solve['x']
 
     # Extract SVMs from alpha vector -  this is where alpha_i > 0 
 
-    support = alpha > 1e-5
+    alpha = np.array(alpha)
+
+    support = np.where((alpha > 1e-5) & (alpha < C))[0]
     if debug:
-        print 'Support', support.shape
+        print 'Support', support
 
     SVM_alpha = alpha[support].reshape(-1,1)
     SVM_X = X[support.flatten()].reshape(-1,d)
@@ -125,5 +156,5 @@ def dual_SVM(X, Y, C, K):
         print 'X', SVM_X.shape
         print 'Y', SVM_Y.shape
 
-    return alpha, SVM_alpha, SVM_X, SVM_Y
+    return alpha, SVM_alpha, SVM_X, SVM_Y, support
     

@@ -1,0 +1,3 @@
+Train err: 0.0425
+Validate err: 0.055
+Number of SVMs: 385
