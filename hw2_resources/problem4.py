@@ -25,13 +25,13 @@ def getDataSets(class_digits, normalized):
       data["Ytest"].extend([label for i in xrange(150)])
   return data
 
-# data_1vs7 = getDataSets([[1], [7]], False)
+data_1vs7 = getDataSets([[1], [8]], False)
 # data_1vs7_normalized = getDataSets([[1], [7]], True)
 # data_3vs5 = getDataSets([[3], [5]], False)
 # data_3vs5_normalized = getDataSets([[3], [5]], True)
 # data_4vs9 = getDataSets([[4], [9]], False)
 # data_4vs9_normalized = getDataSets([[4], [9]], True)
-data_evenvsodd = getDataSets([[0, 2, 4, 6, 8], [1, 3, 5, 7, 9]], False)
+# data_evenvsodd = getDataSets([[0, 2, 4, 6, 8], [1, 3, 5, 7, 9]], False)
 # data_evenvsodd_normalized = getDataSets([[0, 2, 4, 6, 8], [1, 3, 5, 7, 9]], True)
 
 def lr_model_selection(data):
@@ -40,12 +40,17 @@ def lr_model_selection(data):
   validation = []
   for n in norm:
     for inverse_lambda in inverse_lambdas:
-      lr = getLogisticRegression(norm, inverse_lambda, 100)
+      lr = LogisticRegression()
+      if norm == 1:
+        lr = LogisticRegression(penalty = "l1", C = inverse_lambda)
+      else:
+        lr = LogisticRegression(penalty = "l2", C = inverse_lambda)
       lr.fit(data["Xtrain"], data["Ytrain"])
       validation_score = lr.score(data["Xvalidate"], data["Yvalidate"])
-      validation.append((n, inverse_lambda, validation_score))
+      test_score = lr.score(data["Xtest"], data["Ytest"])
+      validation.append((n, inverse_lambda, validation_score, test_score))
   validation.sort(key = lambda x: x[2], reverse = True)
   return validation
 
-print lr_model_selection(data_evenvsodd)
+# print lr_model_selection(data_4vs9)
 
