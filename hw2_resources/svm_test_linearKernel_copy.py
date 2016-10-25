@@ -85,7 +85,6 @@ def wrapper_linear(data, C):
     # validate = loadtxt('data/data'+name+'_validate.csv')
     X = data["Xvalidate"]
     Y = data["Yvalidate"]
-    
     validation_err = classification_error(X, Y)
     
     # plot validation results
@@ -95,7 +94,6 @@ def wrapper_linear(data, C):
     # print '======Testing======'
     X = data["Xtest"]
     Y = data["Ytest"]
-
     testing_error = classification_error(X, Y)
 
     # f = open('errors for linear kernel dataset '+str(name)+' with C = '+str(C)+'.txt', 'w')

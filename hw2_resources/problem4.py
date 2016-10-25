@@ -29,6 +29,8 @@ def getDataSets(class_digits, normalized):
       data["Ytest"].extend([label for i in xrange(150)])
   for handle in handles:
     data[handle] = np.array(data[handle])
+    if handle[0] == "Y":
+      data[handle] = data[handle].reshape(len(data[handle]), 1)
   return data
 
 data_1vs7 = getDataSets([[1], [8]], False)
@@ -58,14 +60,28 @@ def lrModelSelection(data):
   validation.sort(key = lambda x: x[2], reverse = True)
   return validation
 
+# print lrModelSelection(data_1vs7)
+
 def linearSVMModelSelection(data):
   results = []
   for C in [0.001, 0.01, 1, 10, 100]:
-    # print "We are working with " + str(C)
     results.append(wrapper_linear(data, C))
   return results
 
 print linearSVMModelSelection(data_1vs7)
+
+def gaussianSVMModelSelection(data):
+  results = []
+  for c in [0.01, 0.1, 1, 10, 100]:
+    for gamma in [2**i for i in range(-2, 3)]:
+      results.append(wrapper_gaussian(data, c, gamma))
+  return results
+
+def pegasosGaussianSVMModelSelection(data):
+  results = []
+  for gamma in [2**i for i in range(-2, 3)]:
+    results.append(wrapper(data, gamma))
+  return results
 
 
 

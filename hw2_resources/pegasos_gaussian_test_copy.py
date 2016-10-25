@@ -12,7 +12,7 @@ def identity_gram(x):
     
     pass
 
-def wrapper(gamma, name):
+def wrapper(data, gamma):
     
     def gaussian_gram(x, gamma):
         '''Given a dataset and bandwidth sigma, computes the Gaussian RBF kernel matrix'''
@@ -89,10 +89,8 @@ def wrapper(gamma, name):
     
     
     # load data from csv files
-
-    train = loadtxt('data/data'+name+'_train.csv')
-    X = train[:,0:2]
-    Y = train[:,2:3]
+    X = data["Xtrain"]
+    Y = data["Ytrain"]
     
     
     #X = np.asfarray([[2,2],[2,3],[0,-1],[-3,-2]])
@@ -141,6 +139,25 @@ def wrapper(gamma, name):
             print 'New y ', y[0][0]
     
         return y
+
+    def classification_error(X_train, Y_train):
+        n, d = X_train.shape
+        incorrect = 0.0
+        for i in range(n):
+            if predict_gaussianSVM(X_train[i]) * Y_train[i] < 0:
+                incorrect += 1
+        return incorrect / n
+
+    X = data["Xvalidate"]
+    Y = data["Yvalidate"]
+    validation_err = classification_error(X, Y)
+
+    X = data["Xtest"]
+    Y = data["Ytest"]
+    testing_error = classification_error(X, Y)
+
+    return [gamma, validation_err, testing_error]    
+
 #    
 #    fname = 'pegasos_gaussian_data'+name+'_L'+str(lmbda)+'_gamma'+str(gamma)+'.txt'
 #    f = open(fname, 'w')
@@ -149,15 +166,15 @@ def wrapper(gamma, name):
 #    f.close()
 #    
 #    # plot training results
-    plotDecisionBoundary(X, Y, predict_gaussianSVM, [-1,0,1], title = 'Gaussian Kernel SVM on data' + str(name)+' with L = '+str(lmbda) +' gamma = '+str(gamma))
-    pl.show()    
-    pl.savefig('pegasos_gaussian_data'+name+'_L'+str(lmbda)+'_gamma'+str(gamma)+'.png')
+    # plotDecisionBoundary(X, Y, predict_gaussianSVM, [-1,0,1], title = 'Gaussian Kernel SVM on data' + str(name)+' with L = '+str(lmbda) +' gamma = '+str(gamma))
+    # pl.show()    
+    # pl.savefig('pegasos_gaussian_data'+name+'_L'+str(lmbda)+'_gamma'+str(gamma)+'.png')
 
-    return len(SVM_Y)
+    # return len(SVM_Y)
     
-gamma_vals = [2**i for i in range(-2,3)]
-name = '2'
-gamma = gamma_vals[2]
-num_support = wrapper(gamma,name)
-print num_support
+# gamma_vals = [2**i for i in range(-2,3)]
+# name = '2'
+# gamma = gamma_vals[2]
+# num_support = wrapper(gamma,name)
+# print num_support
 

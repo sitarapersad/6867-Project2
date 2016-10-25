@@ -89,10 +89,8 @@ def wrapper(gamma, name):
     
     
     # load data from csv files
-
-    train = loadtxt('data/data'+name+'_train.csv')
-    X = train[:,0:2]
-    Y = train[:,2:3]
+    X = data["Xtrain"]
+    Y = data["Ytrain"]
     
     
     #X = np.asfarray([[2,2],[2,3],[0,-1],[-3,-2]])

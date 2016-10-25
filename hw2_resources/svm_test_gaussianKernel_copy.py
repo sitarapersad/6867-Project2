@@ -11,13 +11,13 @@ import numpy as np
 name = '2'
 C = 0.1
 
-def wrapper_gaussian(name, C, gamma):
-    print '======Training======'
+def wrapper_gaussian(data, C, gamma):
+    # print '======Training======'
     # load data from csv files
-    train = loadtxt('data/data'+name+'_train.csv')
+    # train = loadtxt('data/data'+name+'_train.csv')
     # use deep copy here to make cvxopt happy
-    X = train[:, 0:2].copy()
-    Y = train[:, 2:3].copy()
+    X = data["Xtrain"]
+    Y = data["Ytrain"]
     
     # Define parameters
 
@@ -83,7 +83,7 @@ def wrapper_gaussian(name, C, gamma):
                 incorrect += 1
         return incorrect/n
         
-#    train_err = classification_error(X, Y)
+    train_err = classification_error(X, Y)
 #    # plot training results
 #    plotDecisionBoundary(X, Y, predictSVM, [-1, 0, 1], title = 'SVM Train on dataset '+str(name)+' with C = '+str(C))
 #    pl.savefig('prob3compategaussian_kernelSVMtrain_'+str(name)+'_with C='+str(C)+'_gamma='+str(gamma)+'.png')
@@ -91,8 +91,9 @@ def wrapper_gaussian(name, C, gamma):
 #    print '======Validation======'
 #    # load data from csv files
 #    validate = loadtxt('data/data'+name+'_validate.csv')
-#    X = validate[:, 0:2]
-#    Y = validate[:, 2:3]
+    X = data["Xvalidate"]
+    Y = data["Yvalidate"]
+    validation_err = classification_error(X, Y)
 #    
 #    validation_err = classification_error(X, Y)
 #    
@@ -113,15 +114,18 @@ def wrapper_gaussian(name, C, gamma):
 #    f.close()
 #    
 #    print 'Done plotting...'
+    X = data["Xtest"]
+    Y = data["Ytest"]
+    testing_error = classification_error(X, Y)
+
+    return [C, gamma, validation_err, testing_error]
     
-    return len(SVM_Y)
-    
-gamma_vals = [2**i for i in range(-2,3)]
-gamma = 1
-for name in ['4']:
-    SVM = []
-    for C in [0.01,0.1,1,10,100]:
-        num_svm = wrapper_gaussian(name, C, gamma)
-        SVM.append(num_svm)
-    print name, ' : ', SVM
-    
+# gamma_vals = [2**i for i in range(-2,3)]
+# gamma = 1
+# for name in ['4']:
+#     SVM = []
+#     for C in [0.01,0.1,1,10,100]:
+#         num_svm = wrapper_gaussian(name, C, gamma)
+#         SVM.append(num_svm)
+#     print name, ' : ', SVM
+#     
