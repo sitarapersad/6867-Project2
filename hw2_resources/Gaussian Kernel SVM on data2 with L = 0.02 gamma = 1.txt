@@ -1,0 +1,6 @@
+Number Support Vectors:
+<<<<<<< HEAD:hw2_resources/pegasos_gaussian_data3_L0.02_gamma0.25.txt
+209
+=======
+398
+>>>>>>> 9ec3978423e3ea912402dde7cda956ffb7345e9e:hw2_resources/Gaussian Kernel SVM on data2 with L = 0.02 gamma = 1.txt
