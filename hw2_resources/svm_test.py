@@ -12,7 +12,7 @@ train = loadtxt('data/data'+name+'_train.csv')
 X = train[:, 0:2].copy()
 Y = train[:, 2:3].copy()
 
-# Define paramters
+# Define parameters
 C = 1
 K = identity_gram(X)
 
