@@ -139,7 +139,7 @@ def wrapper(L,name):
     
     
 L_vals =  [2**i for i in range(-10,3)]
-for name in ['1','2','3']:
+for name in ['4']:
     margins = []
     for L in L_vals:
         mar = wrapper(L,name)

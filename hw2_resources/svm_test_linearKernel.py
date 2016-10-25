@@ -110,7 +110,7 @@ def wrapper_linear(name, C):
     
 
 for C in [0.001, 0.01, 1, 10, 100]:
-    for name in ['1','2','3']:
+    for name in ['4']:
         wrapper_linear(name, C)
     
     

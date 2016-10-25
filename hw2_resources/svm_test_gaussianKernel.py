@@ -83,45 +83,45 @@ def wrapper_gaussian(name, C, gamma):
                 incorrect += 1
         return incorrect/n
         
-#    train_err = classification_error(X, Y)
-#    # plot training results
-#    plotDecisionBoundary(X, Y, predictSVM, [-1, 0, 1], title = 'SVM Train on dataset '+str(name)+' with C = '+str(C))
-#    pl.savefig('prob3compategaussian_kernelSVMtrain_'+str(name)+'_with C='+str(C)+'_gamma='+str(gamma)+'.png')
-#    
-#    print '======Validation======'
-#    # load data from csv files
-#    validate = loadtxt('data/data'+name+'_validate.csv')
-#    X = validate[:, 0:2]
-#    Y = validate[:, 2:3]
-#    
-#    validation_err = classification_error(X, Y)
-#    
-#    # plot validation results
-#    plotDecisionBoundary(X, Y, predictSVM, [-1, 0, 1], title = 'SVM Validate on dataset '+str(name)+' with C = '+str(C)+' gamma = '+str(gamma))
-#    pl.savefig('prob2gaussian_kernelSVMvalidate_'+str(name)+'_with C='+str(C)+'_gamma='+str(gamma)+'.png')
-#    
-#    
-#    f = open('errors for gaussian kernel dataset '+str(name)+' with C = '+str(C)+' gamma = '+str(gamma)+'.txt', 'w')
-#    f.write('Train err: ')
-#    f.write(str(train_err))
-#    f.write('\n')
-#    f.write('Validate err: ')
-#    f.write(str(validation_err))
-#    f.write('\n')
-#    f.write('Number of SVMs: ')
-#    f.write(str(len(SVM_Y)))
-#    f.close()
-#    
-#    print 'Done plotting...'
+    train_err = classification_error(X, Y)
+    # plot training results
+    plotDecisionBoundary(X, Y, predictSVM, [-1, 0, 1], title = 'SVM Train on dataset '+str(name)+' with C = '+str(C))
+    pl.savefig('prob3compategaussian_kernelSVMtrain_'+str(name)+'_with C='+str(C)+'_gamma='+str(gamma)+'.png')
+    
+    print '======Validation======'
+    # load data from csv files
+    validate = loadtxt('data/data'+name+'_validate.csv')
+    X = validate[:, 0:2]
+    Y = validate[:, 2:3]
+    
+    validation_err = classification_error(X, Y)
+    
+    # plot validation results
+    plotDecisionBoundary(X, Y, predictSVM, [-1, 0, 1], title = 'SVM Validate on dataset '+str(name)+' with C = '+str(C)+' gamma = '+str(gamma))
+    pl.savefig('prob2gaussian_kernelSVMvalidate_'+str(name)+'_with C='+str(C)+'_gamma='+str(gamma)+'.png')
+    
+    
+    f = open('errors for gaussian kernel dataset '+str(name)+' with C = '+str(C)+' gamma = '+str(gamma)+'.txt', 'w')
+    f.write('Train err: ')
+    f.write(str(train_err))
+    f.write('\n')
+    f.write('Validate err: ')
+    f.write(str(validation_err))
+    f.write('\n')
+    f.write('Number of SVMs: ')
+    f.write(str(len(SVM_Y)))
+    f.close()
+    
+    print 'Done plotting...'
     
     return len(SVM_Y)
     
 gamma_vals = [2**i for i in range(-2,3)]
-gamma = 1
 for name in ['4']:
     SVM = []
-    for C in [0.01,0.1,1,10,100]:
-        num_svm = wrapper_gaussian(name, C, gamma)
-        SVM.append(num_svm)
-    print name, ' : ', SVM
+    for C in [1,100]:
+        for gamma in [0.02,2]:
+            num_svm = wrapper_gaussian(name, C, gamma)
+            SVM.append(num_svm)
+        print name, gamma, ' : ', SVM
     
