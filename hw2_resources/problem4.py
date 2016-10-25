@@ -3,14 +3,18 @@ from plotBoundary import *
 import pylab as pl
 
 from lr_test import *
-# from svm_test import *
+from svm_test_linearKernel_copy import * # C
+from svm_test_gaussianKernel_copy import * # C, gamma
+from pegasos_gaussian_test_copy import * #lambda = 1/nC, gamma
+
 # from pegasos_linear_test import *
 # from pegasos_gaussian_test import *
 
 # e.g., class_digits = [[1], [7]], class_digits = [[0, 2, 4, 6, 8], [1, 3, 5, 7, 9]]
 def getDataSets(class_digits, normalized):
   data = {}
-  for handle in ["Xtrain", "Ytrain", "Xvalidate", "Yvalidate", "Xtest", "Ytest"]:
+  handles = ["Xtrain", "Ytrain", "Xvalidate", "Yvalidate", "Xtest", "Ytest"]
+  for handle in handles:
     data[handle] = []
   for label in [-1, 1]:
     for digit in class_digits[(label + 1)/2]:
@@ -23,6 +27,8 @@ def getDataSets(class_digits, normalized):
       data["Yvalidate"].extend([label for i in xrange(150)])
       data["Xtest"].extend(digits[350:500,:])
       data["Ytest"].extend([label for i in xrange(150)])
+  for handle in handles:
+    data[handle] = np.array(data[handle])
   return data
 
 data_1vs7 = getDataSets([[1], [8]], False)
@@ -34,7 +40,7 @@ data_1vs7 = getDataSets([[1], [8]], False)
 # data_evenvsodd = getDataSets([[0, 2, 4, 6, 8], [1, 3, 5, 7, 9]], False)
 # data_evenvsodd_normalized = getDataSets([[0, 2, 4, 6, 8], [1, 3, 5, 7, 9]], True)
 
-def lr_model_selection(data):
+def lrModelSelection(data):
   norm = [1, 2]
   inverse_lambdas = [1e-2, 1e-1, 1/5.0, 1/2.0, 1, 2, 5, 10, 10e2, 10e50]
   validation = []
@@ -52,5 +58,14 @@ def lr_model_selection(data):
   validation.sort(key = lambda x: x[2], reverse = True)
   return validation
 
-# print lr_model_selection(data_4vs9)
+def linearSVMModelSelection(data):
+  results = []
+  for C in [0.001, 0.01, 1, 10, 100]:
+    # print "We are working with " + str(C)
+    results.append(wrapper_linear(data, C))
+  return results
+
+print linearSVMModelSelection(data_1vs7)
+
+
 
