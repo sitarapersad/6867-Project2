@@ -61,7 +61,7 @@ def lrModelSelection(data):
   validation.sort(key = lambda x: x[2], reverse = True)
   return validation
 
-# print lrModelSelection(data_1vs7)
+print lrModelSelection(data_1vs7)
 
 def linearSVMModelSelection(data):
   results = []
