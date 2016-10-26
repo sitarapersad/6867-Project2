@@ -154,8 +154,8 @@ def wrapper(gamma, name):
     return len(SVM_Y)
     
 gamma_vals = [2**i for i in range(-2,3)]
-name = '2'
-gamma = gamma_vals[2]
-num_support = wrapper(gamma,name)
-print num_support
+name = '4'
+for gamma in gamma_vals:
+    num_support = wrapper(gamma,name)
+    print num_support, gamma
 

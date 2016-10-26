@@ -82,7 +82,7 @@ def wrapper_gaussian(name, C, gamma):
             if predictSVM(X_train[i]) * Y_train[i] < 0:
                 incorrect += 1
         return incorrect/n
-        
+#        
 #    train_err = classification_error(X, Y)
 #    # plot training results
 #    plotDecisionBoundary(X, Y, predictSVM, [-1, 0, 1], title = 'SVM Train on dataset '+str(name)+' with C = '+str(C))
@@ -112,16 +112,16 @@ def wrapper_gaussian(name, C, gamma):
 #    f.write(str(len(SVM_Y)))
 #    f.close()
 #    
-#    print 'Done plotting...'
+    print 'Done plotting...'
     
     return len(SVM_Y)
     
 gamma_vals = [2**i for i in range(-2,3)]
-gamma = 1
 for name in ['4']:
     SVM = []
-    for C in [0.01,0.1,1,10,100]:
-        num_svm = wrapper_gaussian(name, C, gamma)
-        SVM.append(num_svm)
-    print name, ' : ', SVM
+    for C in [1./(0.02*400)]:
+        for gamma in gamma_vals:
+            num_svm = wrapper_gaussian(name, C, gamma)
+            SVM.append(num_svm)
+        print name, gamma, ' : ', SVM
     
