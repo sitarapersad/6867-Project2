@@ -15,7 +15,9 @@ def plotDecisionBoundary(X, Y, scoreFn, values, title = ""):
     h = max((x_max-x_min)/200., (y_max-y_min)/200.)
     xx, yy = meshgrid(arange(x_min, x_max, h),
                       arange(y_min, y_max, h))
+
     zz = array([scoreFn(x) for x in c_[xx.ravel(), yy.ravel()]])
+    print "Reached"
     zz = zz.reshape(xx.shape)
     pl.figure()
     pl.subplot('111', axisbg='whitesmoke')

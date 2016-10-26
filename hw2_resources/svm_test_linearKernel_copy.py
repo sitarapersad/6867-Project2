@@ -11,12 +11,14 @@ def wrapper_linear(data, C):
     # load data from csv files
     # train = loadtxt('data/data'+name+'_train.csv')
     # use deep copy here to make cvxopt happy
-    X = data["Xtrain"]
-    Y = data["Ytrain"]
-    
+    X_train = data["Xtrain"]
+    Y_train = data["Ytrain"]
+
+    print X_train.shape, Y_train.shape
+
     # Define parameters
 
-    K = p2.linear_gram(X)
+    K = p2.linear_gram(X_train)
     
     def column_kernel(SVM_X,x):
         '''
@@ -31,8 +33,8 @@ def wrapper_linear(data, C):
         return np.apply_along_axis(k, 1, SVM_X ).reshape(-1,1)
     
     # Carry out training, primal and/or dual
-    a, SVM_alpha, SVM_X, SVM_Y, support = p2.dual_SVM(X, Y, C, K)
-    
+    a, SVM_alpha, SVM_X, SVM_Y, support = p2.dual_SVM(X_train, Y_train, C, K)
+    print "a", np.min(a), np.max(a)
     def get_prediction_constants():
         ay = SVM_alpha*SVM_Y
         # get gram matrix for only support X values
@@ -49,6 +51,7 @@ def wrapper_linear(data, C):
     # Define the predict_gaussianSVM(x) function, which uses trained parameters, alpha
     
     ay, bias = get_prediction_constants()
+    print bias
     
     def predictSVM(x):
         '''
@@ -66,16 +69,16 @@ def wrapper_linear(data, C):
             print 'New y ', y
         return y + bias
     
-    def classification_error(X_train, Y_train):
+    def classification_error(X, Y):
         ''' Computes the error of the classifier on some training set'''
-        n,d = X_train.shape
+        n,d = X.shape
         incorrect = 0.0
         for i in range(n):
-            if predictSVM(X_train[i]) * Y_train[i] < 0:
+            if predictSVM(X[i]) * Y[i] < 0:
                 incorrect += 1
         return incorrect/n
         
-    train_err = classification_error(X, Y)
+    train_err = classification_error(X_train, Y_train)
     # plot training results
     # plotDecisionBoundary(X, Y, predictSVM, [-1, 0, 1], title = 'MNIST SVM Train on dataset '+str(name)+' with C = '+str(C))
     # pl.savefig('MNIST_prob2linear_kernelSVMtrain_'+str(name)+'_with C='+str(C)+'.png')
@@ -83,18 +86,23 @@ def wrapper_linear(data, C):
     # print '======Validation======'
     # load data from csv files
     # validate = loadtxt('data/data'+name+'_validate.csv')
-    X = data["Xvalidate"]
-    Y = data["Yvalidate"]
-    validation_err = classification_error(X, Y)
+    X_validate = data["Xvalidate"]
+    Y_validate = data["Yvalidate"]
+
+    validation_err = classification_error(X_validate, Y_validate)
+    print C, "validation", validation_err
     
     # plot validation results
-    # plotDecisionBoundary(X, Y, predictSVM, [-1, 0, 1], title = 'MNIST SVM Validate on dataset '+str(name)+' with C = '+str(C))
-    # pl.savefig('MNIST_prob2linear_kernelSVMvalidate_'+str(name)+'_with C='+str(C)+'.png')
-    
+    plotDecisionBoundary(X_train, Y_train, predictSVM, [-1, 0, 1], title = 'MNIST SVM Validate on dataset '+' with C = '+str(C))
+    pl.savefig('MNIST_prob2linear_kernelSVMvalidate_'+'_with C='+str(C)+'.png')
+    pl.show()
+
     # print '======Testing======'
-    X = data["Xtest"]
-    Y = data["Ytest"]
-    testing_error = classification_error(X, Y)
+    X_test = data["Xtest"]
+    Y_test = data["Ytest"]
+    
+    testing_error = classification_error(X_test, Y_test)
+    print C, "testing", testing_error
 
     # f = open('errors for linear kernel dataset '+str(name)+' with C = '+str(C)+'.txt', 'w')
     # f.write('Train err: ')

@@ -22,9 +22,15 @@ def identity_gram(X):
 
 def linear_gram(X, m=1):
     '''Given a dataset, computes the gram matrix using k(x,y) = (1+xy)^m, m=1 '''
+    
     def k(x,y):
-        return (1+np.dot(x,y))**m
-        
+        print "final", x, y
+        try:
+            mf =  (1+np.dot(x,y))**m
+        except ValueError:
+            print "valuerr", x, y
+            return None
+        return mf        
     return compute_gram(X,k)
 
 def gaussian_gram(x, gamma):
@@ -52,6 +58,7 @@ def compute_gram(X, k):
     K = np.zeros((n,n))
     for i in range(n):
         for j in range(n):
+            # print X[i].shape, X[j].shape, 'fuck'
             K[i,j] = k(X[i], X[j])
     return K
 
@@ -143,7 +150,7 @@ def dual_SVM(X, Y, C, K):
 
     alpha = np.array(alpha)
 
-    support = np.where((alpha > 1e-5) & (alpha < C))[0]
+    support = np.where((alpha > 1e-7) & (alpha < C))[0]
     if debug:
         print 'Support', support
 

@@ -16,8 +16,8 @@ def getLogisticRegression(regularization_type, inverse_lambda, iter):
 # parameters
 # names = [str(i) for i in xrange(1, 5)]
 def model_selection():
-  names = ['1']
-  with open('results3.csv', 'w') as csvfile:
+  names = ['1', '2', '3', '4']
+  with open('updated_results.csv', 'w') as csvfile:
     spamwriter = csv.writer(csvfile, delimiter = ' ')
     for name in names:
       # load data from csv files
@@ -30,9 +30,10 @@ def model_selection():
       test = loadtxt('data/data'+name+'_test.csv')
       Xtest = test[:,0:2]
       Ytest = test[:,2:3]
-
+      spamwriter.writerow(name)
 
       inverse_lambdas = [1e-2, 1e-1, 1/5.0, 1/2.0, 1, 2, 5, 10, 10e2, 10e50]
+      results = []
       for i in range(2):
         for j in inverse_lambdas:
           lr = getLogisticRegression(i + 1, j, 5000)
@@ -40,14 +41,16 @@ def model_selection():
           lr.fit(Xtrain, Ytrain)
           def predictLR(x):
             return lr.predict_proba(np.array([x]))[0][1]
-          plotDecisionBoundary(Xtrain, Ytrain, predictLR, [0.5], title = 'LR Train')
+          # plotDecisionBoundary(Xtrain, Ytrain, predictLR, [0.5], title = 'LR Train')
           pl.show()
           print '======Validation======'
-          spamwriter.writerow(["training + validating", name, i + 1, 1.0/j, lr.coef_, np.linalg.norm(lr.coef_), lr.score(Xvalidate, Yvalidate)])
-          plotDecisionBoundary(Xvalidate, Yvalidate, predictLR, [0.5], title = 'LR Validate')
+          results.append([i + 1, 1.0/j, lr.coef_, np.linalg.norm(lr.coef_), 1 - lr.score(Xvalidate, Yvalidate), 1 - lr.score(Xtest, Ytest)])
+          # plotDecisionBoundary(Xvalidate, Yvalidate, predictLR, [0.5], title = 'LR Validate')
           pl.show()
           print '======Testing======'
-          spamwriter.writerow(["testing", lr.score(Xtest, Ytest)])
+      results.sort(key = lambda x: x[-2])
+      for result in results:
+        spamwriter.writerow(result)
 
           # print name, i + 1, 1.0/j, lr.coef_, np.linalg.norm(lr.coef_), lr.score(X, Y)
 
@@ -57,6 +60,8 @@ def predictLR(x):
 
 def classificatonError(lr, X, Y):
   return lr.score(X, Y)
+
+model_selection()
 
 # # plot training results
 # plotDecisionBoundary(X, Y, predictLR, [0.5], title = 'LR Train')
